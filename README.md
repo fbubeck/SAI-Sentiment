@@ -1,1 +1,2 @@
-# SAI-Sentiment
+# Sustainable AI
+# Bachelorarbeit von Ferdinand Bubeck
