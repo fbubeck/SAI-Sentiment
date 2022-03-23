@@ -1,11 +1,12 @@
+from time import time
+
+import keras
 import numpy as np
 import tensorflow as tf
-from sklearn.model_selection import train_test_split
-from keras.layers import Dense, Flatten, MaxPool2D, Conv2D, Dropout
-from keras.models import Sequential
-from matplotlib import pyplot as plt
-from time import time
+import tensorflow_hub as hub
+from keras.layers import Dense
 from keras.utils.np_utils import to_categorical
+from matplotlib import pyplot as plt
 
 
 class TensorFlow_CNN:
@@ -22,27 +23,18 @@ class TensorFlow_CNN:
     def train(self):
         # Training Data
         xs_train, ys_train = self.train_data
-
-        # Convert y_train into one-hot format
-        temp = []
-        for i in range(len(ys_train)):
-            temp.append(to_categorical(ys_train[i], num_classes=10))
-        ys_train = np.array(temp)
-
-        xs_train, xs_val, ys_train, ys_val = train_test_split(xs_train, ys_train, test_size=0.25, random_state=8)
-
-        # normalize pixel values
-        xs_train = xs_train / 255
-        xs_val = xs_val / 255
+        ys_train = to_categorical(ys_train)
 
         # define model architecture
-        self.model = Sequential()
-        self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)))
-        self.model.add(MaxPool2D((2, 2)))
-        self.model.add(Flatten())
-        self.model.add(Dense(100, activation='relu'))
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(10, activation='softmax'))
+        MODEL = "universal-sentence-encoder"
+        VERSION = 4
+        URL = "https://tfhub.dev/google/" + MODEL + "/" + str(VERSION)
+        hub_layer2 = hub.KerasLayer(URL, output_shape=[512], input_shape=[], dtype=tf.string)
+        self.model = keras.Sequential()
+        self.model.add(hub_layer2)
+        self.model.add(keras.layers.Dense(128, activation='relu'))
+        self.model.add(keras.layers.Dropout(0.5))
+        self.model.add(keras.layers.Dense(2, activation='softmax'))
 
         # Define Optimizer
         if self.opt == "SGD":
@@ -51,11 +43,11 @@ class TensorFlow_CNN:
             opt = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
 
         # define loss and optimizer
-        self.model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
         # Modeling
         start_training = time()
-        self.history = self.model.fit(xs_train, ys_train, epochs=self.n_epochs, validation_data=(xs_val, ys_val),
+        self.history = self.model.fit(xs_train, ys_train, epochs=self.n_epochs, validation_split=.2,
                                       batch_size=128, verbose=1)
         end_training = time()
 
@@ -73,7 +65,7 @@ class TensorFlow_CNN:
         error = round(error, 2)
 
         # Summary
-        print('------ TensorFlow - CNN ------')
+        print('------ TensorFlow - Universal Sentence Encoder Model ------')
         print(f'Duration Training: {duration_training} seconds')
         print('Accuracy Training: ', error)
         print("Number of Parameter: ", n_params)
@@ -83,15 +75,7 @@ class TensorFlow_CNN:
     def test(self):
         # Test Data
         xs_test, ys_test = self.test_data
-
-        # normalize pixel values
-        xs_test = xs_test / 255
-
-        # Convert y_test into one-hot format
-        temp = []
-        for i in range(len(ys_test)):
-            temp.append(to_categorical(ys_test[i], num_classes=10))
-        ys_test = np.array(temp)
+        ys_test = to_categorical(ys_test)
 
         # Predict Data
         start_test = time()
