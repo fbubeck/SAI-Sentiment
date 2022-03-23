@@ -7,7 +7,6 @@ import tensorflow_hub as hub
 from keras.layers import Dense
 from keras.utils.np_utils import to_categorical
 from matplotlib import pyplot as plt
-from pypapi import events, papi_high as high
 
 
 class TensorFlow_CNN:
@@ -48,10 +47,8 @@ class TensorFlow_CNN:
 
         # Modeling
         start_training = time()
-        high.start_counters([events.PAPI_FP_OPS, ])
         self.history = self.model.fit(xs_train, ys_train, epochs=self.n_epochs, validation_split=.2,
                                       batch_size=128, verbose=1)
-        x = high.stop_counters()
         end_training = time()
 
         # Time
