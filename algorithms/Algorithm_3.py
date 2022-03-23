@@ -39,6 +39,8 @@ class NeuralNetworkEmbeddingLayer:
         tokenizer.fit_on_texts(train_texts)
         tokenizer.fit_on_texts(test_texts)
 
+        start_training = time()
+
         # transform the tweets to sequences
         train_sequences = tokenizer.texts_to_sequences(train_texts)
         test_sequences = tokenizer.texts_to_sequences(test_texts)
@@ -79,7 +81,6 @@ class NeuralNetworkEmbeddingLayer:
         self.model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
 
         # Modeling
-        start_training = time()
         self.history = self.model.fit(xs_train, ys_train, epochs=self.n_epochs, validation_split=.2,
                                       batch_size=128, verbose=1)
         end_training = time()
