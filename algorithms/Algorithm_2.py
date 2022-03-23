@@ -64,9 +64,7 @@ class TextClassifier_DBOW:
         xs_train = tfidfconverter.fit_transform(train["text"]).toarray()
         self.xs_test = tfidfconverter.fit_transform(test["text"]).toarray()
 
-        # self.model = RandomForestClassifier(n_estimators=200, random_state=0)
-
-        self.model = LogisticRegression()
+        self.model = RandomForestClassifier(n_estimators=100, random_state=0)
 
         # self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=10000)
         print("Build Model ...")
