@@ -58,8 +58,8 @@ def main():
     algo3_c_opt = config["Algorithm 3 - Run C"]["opt"]
 
     # Get Data (Preprocessed)
-    Preprocessor = DataPreprocessing.DataPreprocessing()
-    Preprocessor.clean_text()
+    # Preprocessor = DataPreprocessing.DataPreprocessing()
+    # Preprocessor.clean_text()
 
     Provider = DataProvider.DataProvider()
     train_data, test_data = Provider.import_data()
