@@ -34,6 +34,8 @@ class TextClassifier_DBOW:
         train = pd.DataFrame({"label": ys_train, "text": xs_train})
         test = pd.DataFrame({"label": ys_test, "text": xs_test})
 
+        nltk.download('punkt')
+
         # Text Tokenization
         print("tokenize text...")
         train_tagged = train.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
