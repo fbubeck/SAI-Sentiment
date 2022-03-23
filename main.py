@@ -106,7 +106,7 @@ def main():
     algo3_c_testDuration, algo3_c_testError = algo3_c.test()
     algo3_c.plot()
 
-    # Plots
+    # Tracked Values
     px = 1 / plt.rcParams['figure.dpi']
 
     training1 = {'error': [algo1_a_testError, algo1_b_testError, algo1_c_testError],
@@ -152,6 +152,22 @@ def main():
     data_inference2.sort_values(by=['duration'], inplace=True)
     data_inference3.sort_values(by=['duration'], inplace=True)
 
+    best_training_1 = data_training1.iloc[0]
+    best_training_2 = data_training2.iloc[0]
+    best_training_3 = data_training3.iloc[0]
+
+    results_training = pd.Dataframe()
+    results_training.append(best_training_1, ignore_index=True)
+    results_training.append(best_training_2, ignore_index=True)
+    results_training.append(best_training_3, ignore_index=True)
+
+    print(results_training)
+
+    best_inference_1 = data_inference1.iloc[0]
+    best_inference_2 = data_inference2.iloc[0]
+    best_inference_3 = data_inference3.iloc[0]
+
+    # Plot
     fig = plt.figure(figsize=(1200 * px, 800 * px))
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
