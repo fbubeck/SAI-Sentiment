@@ -69,7 +69,6 @@ class TensorFlow_CNN:
         print(f'Duration Training: {duration_training} seconds')
         print('Accuracy Training: ', error)
         print("Number of Parameter: ", n_params)
-        print("FLOPS: ", x)
 
         return duration_training, error
 
