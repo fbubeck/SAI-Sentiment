@@ -77,15 +77,15 @@ def main():
     algo3_b = Algorithm_3.NeuralNetworkEmbeddingLayer(train_data, test_data, algo3_b_lr, algo3_b_epochs, algo3_b_id, algo3_b_opt)
     algo3_c = Algorithm_3.NeuralNetworkEmbeddingLayer(train_data, test_data, algo3_c_lr, algo3_c_epochs, algo3_c_id, algo3_c_opt)
 
-    # # Universal Sentence Encoder
-    # algo1_a_trainingDuration, algo1_a_trainingError = algo1_a.train()
-    # algo1_a_testDuration, algo1_a_testError = algo1_a.test()
-    # algo1_a.plot()
-    # algo1_b_trainingDuration, algo1_b_trainingError = algo1_b.train()
-    # algo1_b_testDuration, algo1_b_testError = algo1_b.test()
-    # algo1_c_trainingDuration, algo1_c_trainingError = algo1_c.train()
-    # algo1_c_testDuration, algo1_c_testError = algo1_c.test()
-    # algo1_c.plot()
+    # Universal Sentence Encoder
+    algo1_a_trainingDuration, algo1_a_trainingError = algo1_a.train()
+    algo1_a_testDuration, algo1_a_testError = algo1_a.test()
+    algo1_a.plot()
+    algo1_b_trainingDuration, algo1_b_trainingError = algo1_b.train()
+    algo1_b_testDuration, algo1_b_testError = algo1_b.test()
+    algo1_c_trainingDuration, algo1_c_trainingError = algo1_c.train()
+    algo1_c_testDuration, algo1_c_testError = algo1_c.test()
+    algo1_c.plot()
 
     # DBOW + LogReg
     algo2_a_trainingDuration, algo2_a_trainingError = algo2_a.train()
