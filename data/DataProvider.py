@@ -30,6 +30,8 @@ class DataProvider:
         ys_train = pd.read_csv(ys_train_lemma_file, encoding='utf8')
         ys_test = pd.read_csv(ys_test_lemma_file, encoding='utf8')
 
+        print(xs_train)
+
         xs_train = xs_train["clean_tweet"].values
         xs_test = xs_test["clean_tweet"].values
 
