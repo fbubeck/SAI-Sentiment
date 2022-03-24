@@ -1,4 +1,4 @@
-from nltk import RegexpTokenizer
+from nltk import RegexpTokenizer, word_tokenize, TweetTokenizer
 
 from data import DataProvider
 import keras
@@ -46,9 +46,10 @@ class DataPreprocessing:
         xs_test['clean_tweet'] = xs_test['tweet'].apply(lambda x: text_processing(x))
 
         print("tokenize text...")
-        tokenizer = RegexpTokenizer(r'w+')
+        tokenizer = TweetTokenizer()
         xs_train['clean_tweet'] = xs_train['clean_tweet'].apply(tokenizer.tokenize)
         xs_test['clean_tweet'] = xs_test['tweet'].apply(tokenizer.tokenize)
+        print(xs_train.head())
 
         print("stemming text ...")
         st = nltk.PorterStemmer()
@@ -59,6 +60,7 @@ class DataPreprocessing:
 
         xs_train['clean_tweet'] = xs_train['clean_tweet'].apply(lambda x: stemming_on_text(x))
         xs_test['clean_tweet'] = xs_test['clean_tweet'].apply(lambda x: stemming_on_text(x))
+        print(xs_train.head())
 
         print("lemmatize data ...")
         nltk.download('wordnet')
@@ -71,6 +73,7 @@ class DataPreprocessing:
 
         xs_train["clean_tweet"] = xs_train["clean_tweet"].apply(lambda x: lemmatizer_on_text(x))
         xs_test['clean_tweet'] = xs_test['clean_tweet'].apply(lambda x: lemmatizer_on_text(x))
+        print(xs_train.head())
 
         # nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
