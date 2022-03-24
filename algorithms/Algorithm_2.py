@@ -3,6 +3,7 @@ from time import time
 
 import nltk
 import pandas as pd
+from gensim.models import Word2Vec
 from gensim.models.doc2vec import TaggedDocument, Doc2Vec
 from matplotlib import pyplot as plt
 from sklearn import utils
@@ -12,6 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
 from nltk.corpus import stopwords
+
 
 class TextClassifier_DBOW:
     def __init__(self, train_data, test_data, n_epochs, solver, c, penalty, id):
@@ -32,39 +34,33 @@ class TextClassifier_DBOW:
 
         # Training Data
         xs_train, ys_train = self.train_data
-        # xs_test, ys_test = self.test_data
+        xs_test, ys_test = self.test_data
 
-        # train = pd.DataFrame({"label": ys_train, "text": xs_train})
-        # test = pd.DataFrame({"label": ys_test, "text": xs_test})
+        train = pd.DataFrame({"label": ys_train, "text": xs_train})
+        test = pd.DataFrame({"label": ys_test, "text": xs_test})
 
-        # nltk.download('punkt')
-        #
-        # # Text Tokenization
-        # print("tokenize text...")
-        # train_tagged = train.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
-        #                                                     tags=[r.label]), axis=1)
-        # test_tagged = test.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
-        #                                                   tags=[r.label]), axis=1)
-        # # Modeling
+        nltk.download('punkt')
+
+        # Text Tokenization
+        print("tokenize text...")
+        train_tagged = train.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
+                                                            tags=[r.label]), axis=1)
+        test_tagged = test.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
+                                                          tags=[r.label]), axis=1)
+
+        # Modeling
         start_training = time()
-        #
-        # # Distributed Bag of Words
-        # print("train Doc2Vec-DBOW model...")
-        # model_dbow = Doc2Vec(workers=cores)
-        # model_dbow.build_vocab([x for x in tqdm(train_tagged.values)])
-        #
-        # ys_train, xs_train, self.ys_test, self.xs_test = TextClassifier_DBOW.train_Doc2Vec(model_dbow,
-        #                                                                                    train_tagged,
-        #                                                                                    test_tagged, self.n_epochs)
 
-        nltk.download('stopwords')
-        print("vectorize text ...")
-        tfidfconverter = TfidfVectorizer(max_features=2000, min_df=5, max_df=0.7, stop_words=stopwords.words('english'))
-        xs_train = tfidfconverter.fit_transform(xs_train).toarray()
+        # Distributed Bag of Words
+        print("train Doc2Vec-DBOW model...")
+        model_dbow = Doc2Vec(vector_size=300, workers=cores, epochs=40)
+        model_dbow.build_vocab([x for x in tqdm(train_tagged.values)])
 
-        # self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=10000)
+        ys_train, xs_train, self.ys_test, self.xs_test = TextClassifier_DBOW.train_Doc2Vec(model_dbow,
+                                                                                           train_tagged,
+                                                                                           test_tagged, self.n_epochs)
 
-        self.model = RandomForestClassifier(n_estimators=100, random_state=0)
+        self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=1000)
 
         print("build model ...")
         self.model.fit(xs_train, ys_train)
@@ -95,15 +91,11 @@ class TextClassifier_DBOW:
 
     def test(self):
         # Test Data
-        xs_test, ys_test = self.test_data
-
-        tfidfconverter = TfidfVectorizer(max_features=2000, min_df=5, max_df=0.7, stop_words=stopwords.words('english'))
-        xs_test = tfidfconverter.fit_transform(xs_test).toarray()
 
         # Predict Data
         start_test = time()
-        y_pred = self.model.predict(xs_test)
-        error = mean_squared_error(ys_test, y_pred)
+        y_pred = self.model.predict(self.xs_test)
+        error = mean_squared_error(self.ys_test, y_pred)
         error = round(error, 2)
         end_test = time()
 
@@ -130,11 +122,13 @@ class TextClassifier_DBOW:
 
     @staticmethod
     def train_Doc2Vec(model, train_tagged, test_tagged, n_epochs):
-        for epoch in range(n_epochs):
-            model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
-                        total_examples=len(train_tagged.values), epochs=1)
-            model.alpha -= 0.001
-            model.min_alpha = model.alpha
+        # for epoch in range(n_epochs):
+        #     model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
+        #                 total_examples=len(train_tagged.values), epochs=1)
+        #     model.alpha -= 0.001
+        #     model.min_alpha = model.alpha
+        model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
+                    total_examples=len(train_tagged.values), epochs=1)
 
         y_train, X_train = TextClassifier_DBOW.vec_for_learning(model, train_tagged)
         y_test, X_test = TextClassifier_DBOW.vec_for_learning(model, test_tagged)

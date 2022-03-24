@@ -26,9 +26,9 @@
     },
     "Algorithm 2 - Run B":{
         "n_epochs":20,
-        "solver": "newton-cg",
+        "solver": "lsaga",
         "C": 1,
-        "penalty": "l2",
+        "penalty": "l1",
         "id":2.2
     },
     "Algorithm 2 - Run C":{
