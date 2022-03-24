@@ -9,7 +9,6 @@ import nltk
 
 
 class DataPreprocessing:
-
     def clean_text(self):
         data = DataProvider.DataProvider()
         train_data, test_data = data.get_Data()
