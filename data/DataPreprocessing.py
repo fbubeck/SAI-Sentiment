@@ -62,6 +62,7 @@ class DataPreprocessing:
 
         print("lemmatize data ...")
         nltk.download('wordnet')
+        nltk.download('omw-1.4')
         lm = nltk.WordNetLemmatizer()
 
         def lemmatizer_on_text(data):
