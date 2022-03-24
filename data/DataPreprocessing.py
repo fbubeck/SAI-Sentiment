@@ -52,6 +52,7 @@ class DataPreprocessing:
 
         print("stemming text ...")
         st = nltk.PorterStemmer()
+
         def stemming_on_text(data):
             text = [st.stem(word) for word in data]
             return data
@@ -60,6 +61,7 @@ class DataPreprocessing:
         xs_test['clean_tweet'] = xs_test['clean_tweet'].apply(lambda x: stemming_on_text(x))
 
         print("lemmatize data ...")
+        nltk.download('wordnet')
         lm = nltk.WordNetLemmatizer()
 
         def lemmatizer_on_text(data):
