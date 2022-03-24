@@ -18,21 +18,6 @@ class DataProvider:
 
         return train_data, test_data
 
-    def import_data(self):
-        PATH = "data/preprocessedTexts/"
-        xs_train_lemma_file = PATH + "xs_train_lemma.csv"
-        xs_test_lemma_file = PATH + "xs_test_lemma.csv"
-        ys_train_lemma_file = PATH + "ys_train_lemma.csv"
-        ys_test_lemma_file = PATH + "ys_test_lemma.csv"
-
-        xs_train = pd.read_csv(xs_train_lemma_file, encoding='utf8')
-        xs_test = pd.read_csv(xs_test_lemma_file, encoding='utf8')
-        ys_train = pd.read_csv(ys_train_lemma_file, encoding='utf8')
-        ys_test = pd.read_csv(ys_test_lemma_file, encoding='utf8')
-
-        print(xs_train)
-        print(ys_test)
-
 
 
 
