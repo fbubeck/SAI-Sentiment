@@ -61,19 +61,16 @@ class TextClassifier_DBOW:
         # ys_train, xs_train, self.ys_test, self.xs_test = TextClassifier_DBOW.train_Doc2Vec(model_dbow,
         #                                                                                    train_tagged,
         #                                                                                    test_tagged, self.n_epochs)
-        print("tokenize text...")
-        tokenizer = RegexpTokenizer(r'w+')
-        train['text'] = train['text'].apply(tokenizer.tokenize)
-        test['text'] = test['text'].apply(tokenizer.tokenize)
 
         print("vectorize text ...")
-        vectoriser = TfidfVectorizer(ngram_range=(1, 2), max_features=500000)
+        vectoriser = TfidfVectorizer(ngram_range=(1, 2), max_features=100000)
         vectoriser.fit(xs_train)
 
         xs_train = vectoriser.transform(xs_train)
         self.xs_test = vectoriser.transform(self.xs_test)
 
-        self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=100000)
+        # self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=100000)
+        self.model = LogisticRegression()
         print("Build Model ...")
         self.model.fit(xs_train, ys_train)
 

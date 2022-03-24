@@ -1,3 +1,5 @@
+from nltk import RegexpTokenizer
+
 from data import DataProvider
 import keras
 from sklearn.preprocessing import LabelEncoder
@@ -15,7 +17,7 @@ class DataPreprocessing:
 
         # Drop unnecessary columns
         train_data = train_data[['id', 'polarity', 'tweet']].sample(150000)
-        test_data = test_data[['id', 'polarity', 'tweet']]
+        test_data = test_data[['id', 'polarity', 'tweet']].sample(50000)
 
         xs_train = train_data.drop("polarity", axis=1)  # drop labels for training set
         ys_train = train_data["polarity"].copy()
@@ -49,6 +51,11 @@ class DataPreprocessing:
         print("clean data ...")
         xs_train['clean_tweet'] = xs_train['tweet'].apply(lambda x: text_processing(x))
         xs_test['clean_tweet'] = xs_test['tweet'].apply(lambda x: text_processing(x))
+
+        print("tokenize text...")
+        tokenizer = RegexpTokenizer(r'w+')
+        xs_train['clean_tweet'] = xs_train['clean_tweet'].apply(tokenizer.tokenize)
+        xs_test['clean_tweet'] = xs_test['tweet'].apply(tokenizer.tokenize)
 
         print("lemmatize data ...")
         xs_train["clean_tweet"] = lemmatization(xs_train["clean_tweet"])
