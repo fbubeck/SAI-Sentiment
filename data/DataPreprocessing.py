@@ -5,6 +5,7 @@ import keras
 from sklearn.preprocessing import LabelEncoder
 import re
 import spacy
+import nltk
 
 
 class DataPreprocessing:
@@ -25,6 +26,8 @@ class DataPreprocessing:
         xs_test = test_data.drop("polarity", axis=1)  # drop labels for training set
         ys_test = test_data["polarity"].copy()
 
+        print("clean data ...")
+
         def text_processing(tweet):
             # remove https links
             clean_tweet = re.sub(r'http\S+', '', tweet)
@@ -39,16 +42,6 @@ class DataPreprocessing:
             clean_tweet = ' '.join(clean_tweet.split())
             return clean_tweet
 
-        nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
-
-        def lemmatization(tweets):
-            lemma_tweet = []
-            for i in tweets:
-                t = [token.lemma_ for token in nlp(i)]
-                lemma_tweet.append(' '.join(t))
-            return lemma_tweet
-
-        print("clean data ...")
         xs_train['clean_tweet'] = xs_train['tweet'].apply(lambda x: text_processing(x))
         xs_test['clean_tweet'] = xs_test['tweet'].apply(lambda x: text_processing(x))
 
@@ -57,9 +50,36 @@ class DataPreprocessing:
         xs_train['clean_tweet'] = xs_train['clean_tweet'].apply(tokenizer.tokenize)
         xs_test['clean_tweet'] = xs_test['tweet'].apply(tokenizer.tokenize)
 
+        print("stemming text ...")
+        st = nltk.PorterStemmer()
+        def stemming_on_text(data):
+            text = [st.stem(word) for word in data]
+            return data
+
+        xs_train['clean_tweet'] = xs_train['clean_tweet'].apply(lambda x: stemming_on_text(x))
+        xs_test['clean_tweet'] = xs_test['clean_tweet'].apply(lambda x: stemming_on_text(x))
+
         print("lemmatize data ...")
-        xs_train["clean_tweet"] = lemmatization(xs_train["clean_tweet"])
-        xs_test['clean_tweet'] = lemmatization(xs_test['clean_tweet'])
+        lm = nltk.WordNetLemmatizer()
+
+        def lemmatizer_on_text(data):
+            text = [lm.lemmatize(word) for word in data]
+            return data
+
+        xs_train["clean_tweet"] = xs_train["clean_tweet"].apply(lambda x: lemmatizer_on_text(x))
+        xs_test['clean_tweet'] = xs_test['clean_tweet'].apply(lambda x: lemmatizer_on_text(x))
+
+        # nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+
+        # def lemmatization(tweets):
+        #     lemma_tweet = []
+        #     for i in tweets:
+        #         t = [token.lemma_ for token in nlp(i)]
+        #         lemma_tweet.append(' '.join(t))
+        #     return lemma_tweet
+
+        # xs_train["clean_tweet"] = lemmatization(xs_train["clean_tweet"])
+        # xs_test['clean_tweet'] = lemmatization(xs_test['clean_tweet'])
 
         # Defining Files
         PATH = "data/preprocessedTexts/"
