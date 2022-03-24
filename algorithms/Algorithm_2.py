@@ -63,14 +63,14 @@ class TextClassifier_DBOW:
         #                                                                                    test_tagged, self.n_epochs)
 
         print("vectorize text ...")
-        vectoriser = TfidfVectorizer(ngram_range=(1, 2), max_features=100000)
+        vectoriser = TfidfVectorizer(max_features=100000)
         vectoriser.fit(xs_train)
 
         xs_train = vectoriser.transform(xs_train)
         self.xs_test = vectoriser.transform(self.xs_test)
 
         # self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=100000)
-        self.model = LogisticRegression()
+        self.model = RandomForestClassifier(n_estimators=1000)
         print("Build Model ...")
         self.model.fit(xs_train, ys_train)
 
