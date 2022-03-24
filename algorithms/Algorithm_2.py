@@ -14,6 +14,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.naive_bayes import MultinomialNB
 from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
+from keras.utils.np_utils import to_categorical
 
 
 class TextClassifier_DBOW:
@@ -36,6 +37,9 @@ class TextClassifier_DBOW:
         # Training Data
         xs_train, ys_train = self.train_data
         self.xs_test, self.ys_test = self.test_data
+
+        ys_train = to_categorical(ys_train)
+        self.ys_test = to_categorical(self.ys_test)
 
         train = pd.DataFrame({"label": ys_train, "text": xs_train})
         test = pd.DataFrame({"label": self.ys_test, "text": self.xs_test})
