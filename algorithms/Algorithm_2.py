@@ -10,6 +10,7 @@ from sklearn import utils
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
+from sklearn.naive_bayes import MultinomialNB
 from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -60,11 +61,14 @@ class TextClassifier_DBOW:
         #                                                                                    test_tagged, self.n_epochs)
 
         print("Vectorize Text ...")
-        tfidfconverter = TfidfVectorizer(max_features=1000, min_df=5, max_df=0.7, stop_words=stopwords.words('english'))
+        tfidfconverter = TfidfVectorizer(stop_words=stopwords.words('english'))
         xs_train = tfidfconverter.fit_transform(train["text"]).toarray()
         self.xs_test = tfidfconverter.fit_transform(test["text"]).toarray()
 
-        self.model = RandomForestClassifier(n_estimators=100, random_state=0)
+        self.model = MultinomialNB()
+        self.model.fit(xs_train, ys_train)
+
+        # self.model = RandomForestClassifier(n_estimators=1000, random_state=0)
 
         # self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=10000)
         print("Build Model ...")
