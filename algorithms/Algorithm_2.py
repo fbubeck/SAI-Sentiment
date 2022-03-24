@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from gensim.models.doc2vec import TaggedDocument, Doc2Vec
 from matplotlib import pyplot as plt
+from nltk import RegexpTokenizer
 from nltk.corpus import stopwords
 from sklearn import utils
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
@@ -38,31 +39,38 @@ class TextClassifier_DBOW:
         xs_train, ys_train = self.train_data
         self.xs_test, self.ys_test = self.test_data
 
-        ys_train = to_categorical(ys_train)
-        self.ys_test = to_categorical(self.ys_test)
-
         train = pd.DataFrame({"label": ys_train, "text": xs_train})
         test = pd.DataFrame({"label": self.ys_test, "text": self.xs_test})
 
         nltk.download('punkt')
 
         # Text Tokenization
-        print("tokenize text...")
-        train_tagged = train.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
-                                                            tags=[r.label]), axis=1)
-        test_tagged = test.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
-                                                          tags=[r.label]), axis=1)
+        # print("tokenize text...")
+        # train_tagged = train.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
+        #                                                     tags=[r.label]), axis=1)
+        # test_tagged = test.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
+        #                                                   tags=[r.label]), axis=1)
         # Modeling
         start_training = time()
+        #
+        # # Distributed Bag of Words
+        # print("train Doc2Vec-DBOW model...")
+        # model_dbow = Doc2Vec(workers=cores)
+        # model_dbow.build_vocab([x for x in tqdm(train_tagged.values)])
+        #
+        # ys_train, xs_train, self.ys_test, self.xs_test = TextClassifier_DBOW.train_Doc2Vec(model_dbow,
+        #                                                                                    train_tagged,
+        #                                                                                    test_tagged, self.n_epochs)
+        print("tokenize text...")
+        tokenizer = RegexpTokenizer(r'w+')
+        train['text'] = train['text'].apply(tokenizer.tokenize)
+        test['text'] = test['text'].apply(tokenizer.tokenize)
 
-        # Distributed Bag of Words
-        print("train Doc2Vec-DBOW model...")
-        model_dbow = Doc2Vec(workers=cores)
-        model_dbow.build_vocab([x for x in tqdm(train_tagged.values)])
+        print("vectorize text ...")
+        vectoriser = TfidfVectorizer(ngram_range=(1, 2), max_features=500000)
 
-        ys_train, xs_train, self.ys_test, self.xs_test = TextClassifier_DBOW.train_Doc2Vec(model_dbow,
-                                                                                           train_tagged,
-                                                                                           test_tagged, self.n_epochs)
+        xs_train = vectoriser.transform(xs_train)
+        self.xs_test = vectoriser.transform(self.xs_test)
 
         self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=100000)
         print("Build Model ...")

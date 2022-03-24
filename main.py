@@ -77,7 +77,7 @@ def main():
     algo3_b = Algorithm_3.NeuralNetworkEmbeddingLayer(train_data, test_data, algo3_b_lr, algo3_b_epochs, algo3_b_id, algo3_b_opt)
     algo3_c = Algorithm_3.NeuralNetworkEmbeddingLayer(train_data, test_data, algo3_c_lr, algo3_c_epochs, algo3_c_id, algo3_c_opt)
 
-    # Universal Sentence Encoder
+    # # Universal Sentence Encoder
     # algo1_a_trainingDuration, algo1_a_trainingError = algo1_a.train()
     # algo1_a_testDuration, algo1_a_testError = algo1_a.test()
     # algo1_a.plot()
@@ -94,7 +94,7 @@ def main():
     # algo2_b_testDuration, algo2_b_testError = algo2_b.test()
     # algo2_c_trainingDuration, algo2_c_trainingError = algo2_c.train()
     # algo2_c_testDuration, algo2_c_testError = algo2_c.test()
-    #
+
     # # NeuralNetworkEmbeddingLayer
     # algo3_a_trainingDuration, algo3_a_trainingError = algo3_a.train()
     # algo3_a_testDuration, algo3_a_testError = algo3_a.test()
