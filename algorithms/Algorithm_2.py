@@ -68,6 +68,7 @@ class TextClassifier_DBOW:
 
         print("vectorize text ...")
         vectoriser = TfidfVectorizer(ngram_range=(1, 2), max_features=500000)
+        vectoriser.fit(xs_train)
 
         xs_train = vectoriser.transform(xs_train)
         self.xs_test = vectoriser.transform(self.xs_test)
