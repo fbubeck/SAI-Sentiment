@@ -7,9 +7,12 @@ from gensim.models.doc2vec import TaggedDocument, Doc2Vec
 from matplotlib import pyplot as plt
 from sklearn import utils
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
+from nltk.corpus import stopwords
+
 class TextClassifier_DBOW:
     def __init__(self, train_data, test_data, n_epochs, solver, c, penalty, id):
         self.history = None
@@ -29,33 +32,38 @@ class TextClassifier_DBOW:
 
         # Training Data
         xs_train, ys_train = self.train_data
-        xs_test, ys_test = self.test_data
+        # xs_test, ys_test = self.test_data
 
-        train = pd.DataFrame({"label": ys_train, "text": xs_train})
-        test = pd.DataFrame({"label": ys_test, "text": xs_test})
+        # train = pd.DataFrame({"label": ys_train, "text": xs_train})
+        # test = pd.DataFrame({"label": ys_test, "text": xs_test})
 
-        nltk.download('punkt')
-
-        # Text Tokenization
-        print("tokenize text...")
-        train_tagged = train.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
-                                                            tags=[r.label]), axis=1)
-        test_tagged = test.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
-                                                          tags=[r.label]), axis=1)
-        # Modeling
+        # nltk.download('punkt')
+        #
+        # # Text Tokenization
+        # print("tokenize text...")
+        # train_tagged = train.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
+        #                                                     tags=[r.label]), axis=1)
+        # test_tagged = test.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
+        #                                                   tags=[r.label]), axis=1)
+        # # Modeling
         start_training = time()
+        #
+        # # Distributed Bag of Words
+        # print("train Doc2Vec-DBOW model...")
+        # model_dbow = Doc2Vec(workers=cores)
+        # model_dbow.build_vocab([x for x in tqdm(train_tagged.values)])
+        #
+        # ys_train, xs_train, self.ys_test, self.xs_test = TextClassifier_DBOW.train_Doc2Vec(model_dbow,
+        #                                                                                    train_tagged,
+        #                                                                                    test_tagged, self.n_epochs)
 
-        # Distributed Bag of Words
-        print("train Doc2Vec-DBOW model...")
-        model_dbow = Doc2Vec(workers=cores)
-        model_dbow.build_vocab([x for x in tqdm(train_tagged.values)])
+        nltk.download('stopwords')
+        tfidfconverter = TfidfVectorizer(max_features=2000, min_df=5, max_df=0.7, stop_words=stopwords.words('english'))
+        xs_train = tfidfconverter.fit_transform(xs_train).toarray()
 
-        ys_train, xs_train, self.ys_test, self.xs_test = TextClassifier_DBOW.train_Doc2Vec(model_dbow,
-                                                                                           train_tagged,
-                                                                                           test_tagged, self.n_epochs)
+        # self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=10000)
 
-        self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=10000)
-        self.model.fit(xs_train, ys_train)
+        self.model = RandomForestClassifier(n_estimators=100, random_state=0)
 
         self.model.fit(xs_train, ys_train)
 
@@ -85,6 +93,10 @@ class TextClassifier_DBOW:
 
     def test(self):
         # Test Data
+        xs_test, ys_test = self.test_data
+
+        tfidfconverter = TfidfVectorizer(max_features=2000, min_df=5, max_df=0.7, stop_words=stopwords.words('english'))
+        xs_test = tfidfconverter.fit_transform(xs_test).toarray()
 
         # Predict Data
         start_test = time()
