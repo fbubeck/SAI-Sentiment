@@ -58,6 +58,7 @@ class TextClassifier_DBOW:
         #                                                                                    test_tagged, self.n_epochs)
 
         nltk.download('stopwords')
+        print("vectorize text ...")
         tfidfconverter = TfidfVectorizer(max_features=2000, min_df=5, max_df=0.7, stop_words=stopwords.words('english'))
         xs_train = tfidfconverter.fit_transform(xs_train).toarray()
 
@@ -65,6 +66,7 @@ class TextClassifier_DBOW:
 
         self.model = RandomForestClassifier(n_estimators=100, random_state=0)
 
+        print("build model ...")
         self.model.fit(xs_train, ys_train)
 
         end_training = time()
@@ -100,8 +102,8 @@ class TextClassifier_DBOW:
 
         # Predict Data
         start_test = time()
-        y_pred = self.model.predict(self.xs_test)
-        error = mean_squared_error(self.ys_test, y_pred)
+        y_pred = self.model.predict(xs_test)
+        error = mean_squared_error(ys_test, y_pred)
         error = round(error, 2)
         end_test = time()
 
