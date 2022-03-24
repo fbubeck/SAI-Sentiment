@@ -87,16 +87,17 @@ class DataPreprocessing:
         # xs_train["clean_tweet"] = lemmatization(xs_train["clean_tweet"])
         # xs_test['clean_tweet'] = lemmatization(xs_test['clean_tweet'])
 
-        # Defining Files
-        PATH = "data/preprocessedTexts/"
-        xs_train_lemma_file = PATH + "xs_train_lemma.csv"
-        xs_test_lemma_file = PATH + "xs_test_lemma.csv"
-        ys_train_lemma_file = PATH + "ys_train_lemma.csv"
-        ys_test_lemma_file = PATH + "ys_test_lemma.csv"
+        xs_train = xs_train["clean_tweet"].values
+        xs_test = xs_test["clean_tweet"].values
 
-        # Save to files
-        xs_train.to_csv(xs_train_lemma_file, index=False)
-        xs_test.to_csv(xs_test_lemma_file, index=False)
-        ys_train.to_csv(ys_train_lemma_file, index=False)
-        ys_test.to_csv(ys_test_lemma_file, index=False)
+        # Label Encoding
+        print("Encode Labels ...")
+        label_encoder = LabelEncoder()
+        ys_train = label_encoder.fit_transform(ys_train)
+        ys_test = label_encoder.fit_transform(ys_test)
+
+        train_data = xs_train, ys_train
+        test_data = xs_test, ys_test
+
+        return train_data, test_data
 

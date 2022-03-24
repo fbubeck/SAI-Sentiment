@@ -59,10 +59,7 @@ def main():
 
     # Get Data (Preprocessed)
     Preprocessor = DataPreprocessing.DataPreprocessing()
-    Preprocessor.clean_text()
-
-    Provider = DataProvider.DataProvider()
-    train_data, test_data = Provider.import_data()
+    train_data, test_data = Preprocessor.clean_text()
 
     # Creating Algorithm Objects
     algo1_a = Algorithm_1.TensorFlow_CNN(train_data, test_data, algo1_a_lr, algo1_a_epochs, algo1_a_id, algo1_a_opt)
@@ -106,7 +103,7 @@ def main():
     algo3_c_testDuration, algo3_c_testError = algo3_c.test()
     algo3_c.plot()
 
-    # Tracked Values
+    # Plots
     px = 1 / plt.rcParams['figure.dpi']
 
     training1 = {'error': [algo1_a_testError, algo1_b_testError, algo1_c_testError],
@@ -152,22 +149,6 @@ def main():
     data_inference2.sort_values(by=['duration'], inplace=True)
     data_inference3.sort_values(by=['duration'], inplace=True)
 
-    best_training_1 = data_training1.iloc[0]
-    best_training_2 = data_training2.iloc[0]
-    best_training_3 = data_training3.iloc[0]
-
-    data = []
-    data.append([best_training_1, best_training_2, best_training_3])
-    results_training = pd.DataFrame(data, columns=['error', 'duration', 'Run'])
-
-
-    print(results_training)
-
-    best_inference_1 = data_inference1.iloc[0]
-    best_inference_2 = data_inference2.iloc[0]
-    best_inference_3 = data_inference3.iloc[0]
-
-    # Plot
     fig = plt.figure(figsize=(1200 * px, 800 * px))
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
