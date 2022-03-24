@@ -78,33 +78,33 @@ def main():
     algo3_c = Algorithm_3.NeuralNetworkEmbeddingLayer(train_data, test_data, algo3_c_lr, algo3_c_epochs, algo3_c_id, algo3_c_opt)
 
     # Universal Sentence Encoder
-    # algo1_a_trainingDuration, algo1_a_trainingError = algo1_a.train()
-    # algo1_a_testDuration, algo1_a_testError = algo1_a.test()
-    # algo1_a.plot()
-    # algo1_b_trainingDuration, algo1_b_trainingError = algo1_b.train()
-    # algo1_b_testDuration, algo1_b_testError = algo1_b.test()
-    # algo1_c_trainingDuration, algo1_c_trainingError = algo1_c.train()
-    # algo1_c_testDuration, algo1_c_testError = algo1_c.test()
-    # algo1_c.plot()
+    algo1_a_trainingDuration, algo1_a_trainingError = algo1_a.train()
+    algo1_a_testDuration, algo1_a_testError = algo1_a.test()
+    algo1_a.plot()
+    algo1_b_trainingDuration, algo1_b_trainingError = algo1_b.train()
+    algo1_b_testDuration, algo1_b_testError = algo1_b.test()
+    algo1_c_trainingDuration, algo1_c_trainingError = algo1_c.train()
+    algo1_c_testDuration, algo1_c_testError = algo1_c.test()
+    algo1_c.plot()
 
     # DBOW + LogReg
     algo2_a_trainingDuration, algo2_a_trainingError = algo2_a.train()
     algo2_a_testDuration, algo2_a_testError = algo2_a.test()
-    # algo2_b_trainingDuration, algo2_b_trainingError = algo2_b.train()
-    # algo2_b_testDuration, algo2_b_testError = algo2_b.test()
-    # algo2_c_trainingDuration, algo2_c_trainingError = algo2_c.train()
-    # algo2_c_testDuration, algo2_c_testError = algo2_c.test()
-    #
-    # # NeuralNetworkEmbeddingLayer
-    # algo3_a_trainingDuration, algo3_a_trainingError = algo3_a.train()
-    # algo3_a_testDuration, algo3_a_testError = algo3_a.test()
-    # algo3_a.plot()
-    # algo3_b_trainingDuration, algo3_b_trainingError = algo3_b.train()
-    # algo3_b_testDuration, algo3_b_testError = algo3_b.test()
-    # algo3_b.plot()
-    # algo3_c_trainingDuration, algo3_c_trainingError = algo3_c.train()
-    # algo3_c_testDuration, algo3_c_testError = algo3_c.test()
-    # algo3_c.plot()
+    algo2_b_trainingDuration, algo2_b_trainingError = algo2_b.train()
+    algo2_b_testDuration, algo2_b_testError = algo2_b.test()
+    algo2_c_trainingDuration, algo2_c_trainingError = algo2_c.train()
+    algo2_c_testDuration, algo2_c_testError = algo2_c.test()
+
+    # NeuralNetworkEmbeddingLayer
+    algo3_a_trainingDuration, algo3_a_trainingError = algo3_a.train()
+    algo3_a_testDuration, algo3_a_testError = algo3_a.test()
+    algo3_a.plot()
+    algo3_b_trainingDuration, algo3_b_trainingError = algo3_b.train()
+    algo3_b_testDuration, algo3_b_testError = algo3_b.test()
+    algo3_b.plot()
+    algo3_c_trainingDuration, algo3_c_trainingError = algo3_c.train()
+    algo3_c_testDuration, algo3_c_testError = algo3_c.test()
+    algo3_c.plot()
 
     # Tracked Values
     px = 1 / plt.rcParams['figure.dpi']
