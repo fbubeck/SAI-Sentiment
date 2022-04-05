@@ -10,13 +10,13 @@ from matplotlib import pyplot as plt
 
 
 class TensorFlow_CNN:
-    def __init__(self, train_data, test_data, learning_rate, n_epochs, id, opt):
+    def __init__(self, train_data, test_data, learning_rate, n_epochs, opt, i):
         self.history = None
         self.train_data = train_data
         self.test_data = test_data
         self.learning_rate = learning_rate
         self.n_epochs = n_epochs
-        self.id = id
+        self.i = i
         self.opt = opt
         self.model = 0
 
@@ -32,7 +32,7 @@ class TensorFlow_CNN:
         hub_layer2 = hub.KerasLayer(URL, output_shape=[512], input_shape=[], dtype=tf.string)
         self.model = keras.Sequential()
         self.model.add(hub_layer2)
-        self.model.add(keras.layers.Dense(128, activation='relu'))
+        self.model.add(keras.layers.Dense(self.i, activation='relu'))
         self.model.add(keras.layers.Dropout(0.5))
         self.model.add(keras.layers.Dense(2, activation='softmax'))
 
@@ -66,11 +66,12 @@ class TensorFlow_CNN:
 
         # Summary
         print('------ TensorFlow - Universal Sentence Encoder Model ------')
+        print('Number of Neurons: ', self.i)
         print(f'Duration Training: {duration_training} seconds')
         print('Accuracy Training: ', error)
         print("Number of Parameter: ", n_params)
 
-        return duration_training, error
+        return duration_training, error, n_params
 
     def test(self):
         # Test Data

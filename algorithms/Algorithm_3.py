@@ -1,5 +1,6 @@
 from time import time
 
+import numpy as np
 import pandas as pd
 import tensorflow as tf
 from keras.preprocessing.text import Tokenizer
@@ -10,13 +11,13 @@ from tensorflow.keras import layers
 
 
 class NeuralNetworkEmbeddingLayer:
-    def __init__(self, train_data, test_data, learning_rate, n_epochs, id, opt):
+    def __init__(self, train_data, test_data, learning_rate, n_epochs, opt, i):
         self.history = None
         self.train_data = train_data
         self.test_data = test_data
         self.learning_rate = learning_rate
         self.n_epochs = n_epochs
-        self.id = id
+        self.i = i
         self.opt = opt
         self.model = 0
         self.xs_test = None
@@ -61,7 +62,7 @@ class NeuralNetworkEmbeddingLayer:
         self.model = tf.keras.Sequential()
         self.model.add(layers.Embedding(max_words, embedding_dim, input_length=max_length_train))
         self.model.add(layers.Flatten())
-        self.model.add(layers.Dense(128, activation='relu'))
+        self.model.add(layers.Dense(self.i, activation='relu'))
         self.model.add(keras.layers.Dropout(0.5))
         self.model.add(layers.Dense(1, activation='sigmoid'))
 
@@ -88,10 +89,10 @@ class NeuralNetworkEmbeddingLayer:
         duration_training = end_training - start_training
         duration_training = round(duration_training, 2)
 
-        # # Number of Parameter
-        # trainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.trainable_weights])
-        # nonTrainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.non_trainable_weights])
-        # n_params = trainableParams + nonTrainableParams
+        # Number of Parameter
+        trainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.trainable_weights])
+        nonTrainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.non_trainable_weights])
+        n_params = trainableParams + nonTrainableParams
 
         # Prediction for Training mse
         loss, error = self.model.evaluate(xs_train, ys_train, verbose=0)
@@ -99,11 +100,12 @@ class NeuralNetworkEmbeddingLayer:
 
         # Summary
         print('------ Embedding Layer + Neural Network ------')
+        print('Number of Neurons: ', self.i)
         print(f'Duration Training: {duration_training} seconds')
         print('Accuracy Training: ', error)
-        # print("Number of Parameter: ", n_params)
+        print("Number of Parameter: ", n_params)
 
-        return duration_training, error
+        return duration_training, error, n_params
 
     def test(self):
         # Predict Data

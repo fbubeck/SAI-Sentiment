@@ -2,29 +2,33 @@ import multiprocessing
 from time import time
 
 import nltk
+import numpy as np
 import pandas as pd
+import tensorflow as tf
 from gensim.models import Word2Vec
 from gensim.models.doc2vec import TaggedDocument, Doc2Vec
 from matplotlib import pyplot as plt
+from keras.preprocessing.text import Tokenizer
+from keras_preprocessing.sequence import pad_sequences
 from sklearn import utils
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
+from tensorflow import keras
 from tqdm import tqdm
 from nltk.corpus import stopwords
 
 
 class TextClassifier_DBOW:
-    def __init__(self, train_data, test_data, n_epochs, solver, c, penalty, id):
+    def __init__(self, train_data, test_data, learning_rate, n_epochs, opt, i):
         self.history = None
         self.train_data = train_data
         self.test_data = test_data
         self.n_epochs = n_epochs
-        self.solver = solver
-        self.c = c
-        self.penalty = penalty
-        self.id = id
+        self.learning_rate = learning_rate
+        self.opt = opt
+        self.i = i
         self.model = 0
         self.ys_test = None
         self.xs_test = None
@@ -39,63 +43,87 @@ class TextClassifier_DBOW:
         train = pd.DataFrame({"label": ys_train, "text": xs_train})
         test = pd.DataFrame({"label": ys_test, "text": xs_test})
 
-        nltk.download('punkt')
+        # number of words to consider in the dataset
+        max_words = 10000
+        tokenizer = Tokenizer(num_words=10000)
+        train_texts = list(train['text'].values)
+        test_texts = list(test['text'].values)
+        # create the token index based on tweets
+        tokenizer.fit_on_texts(train_texts)
+        tokenizer.fit_on_texts(test_texts)
 
-        # Text Tokenization
-        print("tokenize text...")
-        train_tagged = train.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
-                                                            tags=[r.label]), axis=1)
-        test_tagged = test.apply(lambda r: TaggedDocument(words=TextClassifier_DBOW.tokenize_text(r['text']),
-                                                          tags=[r.label]), axis=1)
+        # transform the tweets to sequences
+        train_sequences = tokenizer.texts_to_sequences(train_texts)
+        test_sequences = tokenizer.texts_to_sequences(test_texts)
+        # set the maximum length of each tweet based on dataset
+        lens = [len(x) for x in train_sequences]
+        max_length_train = max(lens)
+
+        lens = [len(x) for x in train_sequences]
+        max_length_test = max(lens)
+
+        xs_train = pad_sequences(train_sequences, maxlen=max_length_train)
+        ys_train = train['label'].values
+
+        self.xs_test = pad_sequences(test_sequences, maxlen=max_length_test)
+        self.ys_test = test['label'].values
+
+        # define model architecture
+        embedding_dim = 100
+
+        self.model = keras.Sequential()
+        self.model.add(keras.layers.Embedding(max_words, embedding_dim, input_length=max_length_train))
+        # self.model.add(keras.layers.Flatten())
+        self.model.add(keras.layers.Bidirectional(tf.keras.layers.LSTM(self.i)))
+        self.model.add(keras.layers.Dense(self.i, activation='relu'))
+        self.model.add(keras.layers.Dropout(0.5))
+        self.model.add(keras.layers.Dense(1, activation='sigmoid'))
+
+        # Define Optimizer
+        if self.opt == "SGD":
+            opt = tf.keras.optimizers.SGD(learning_rate=self.learning_rate)
+
+        elif self.opt == "rmsprop":
+            opt = tf.keras.optimizers.RMSprop(learning_rate=self.learning_rate)
+
+        else:
+            opt = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
+
+        # define loss and optimizer
+        self.model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
 
         # Modeling
         start_training = time()
-
-        # Distributed Bag of Words
-        print("train Doc2Vec-DBOW model...")
-        model_dbow = Doc2Vec(vector_size=300, workers=cores, epochs=40)
-        model_dbow.build_vocab([x for x in tqdm(train_tagged.values)])
-
-        ys_train, xs_train, self.ys_test, self.xs_test = TextClassifier_DBOW.train_Doc2Vec(model_dbow,
-                                                                                           train_tagged,
-                                                                                           test_tagged, self.n_epochs)
-
-        self.model = LogisticRegression(verbose=1, solver=self.solver, C=self.c, penalty=self.penalty, max_iter=1000)
-
-        print("build model ...")
-        self.model.fit(xs_train, ys_train)
-
+        self.history = self.model.fit(xs_train, ys_train, epochs=self.n_epochs, validation_split=.2,
+                                      batch_size=128, verbose=1)
         end_training = time()
 
         # Time
         duration_training = end_training - start_training
         duration_training = round(duration_training, 2)
 
-        # # Number of Parameter
-        # trainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.trainable_weights])
-        # nonTrainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.non_trainable_weights])
-        # n_params = trainableParams + nonTrainableParams
+        # Number of Parameter
+        trainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.trainable_weights])
+        nonTrainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.non_trainable_weights])
+        n_params = trainableParams + nonTrainableParams
 
         # Prediction for Training mse
-        y_pred = self.model.predict(xs_train)
-        error = mean_squared_error(ys_train, y_pred)
+        loss, error = self.model.evaluate(xs_train, ys_train, verbose=0)
         error = round(error, 2)
 
         # Summary
-        print('------ DBOW-Model + LogReg ------')
+        print('------ Embedding Layer + Neural Network ------')
+        print('Number of Neurons: ', self.i)
         print(f'Duration Training: {duration_training} seconds')
         print('Accuracy Training: ', error)
-        # print("Number of Parameter: ", n_params)
+        print("Number of Parameter: ", n_params)
 
-        return duration_training, error
+        return duration_training, error, n_params
 
     def test(self):
-        # Test Data
-
         # Predict Data
         start_test = time()
-        y_pred = self.model.predict(self.xs_test)
-        error = mean_squared_error(self.ys_test, y_pred)
+        loss, error = self.model.evaluate(self.xs_test, self.ys_test, verbose=0)
         error = round(error, 2)
         end_test = time()
 
@@ -122,13 +150,13 @@ class TextClassifier_DBOW:
 
     @staticmethod
     def train_Doc2Vec(model, train_tagged, test_tagged, n_epochs):
-        # for epoch in range(n_epochs):
-        #     model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
-        #                 total_examples=len(train_tagged.values), epochs=1)
-        #     model.alpha -= 0.001
-        #     model.min_alpha = model.alpha
-        model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
-                    total_examples=len(train_tagged.values), epochs=1)
+        for epoch in range(n_epochs):
+            model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
+                        total_examples=len(train_tagged.values), epochs=1)
+            model.alpha -= 0.001
+            model.min_alpha = model.alpha
+        # model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
+        #             total_examples=len(train_tagged.values), epochs=1)
 
         y_train, X_train = TextClassifier_DBOW.vec_for_learning(model, train_tagged)
         y_test, X_test = TextClassifier_DBOW.vec_for_learning(model, test_tagged)
