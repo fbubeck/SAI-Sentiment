@@ -58,7 +58,7 @@ class TensorFlow_CNN:
         # Number of Parameter
         trainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.trainable_weights])
         nonTrainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.non_trainable_weights])
-        n_params = trainableParams + nonTrainableParams
+        n_params = trainableParams # + nonTrainableParams
 
         # Prediction for Training mse
         loss, error = self.model.evaluate(xs_train, ys_train, verbose=0)

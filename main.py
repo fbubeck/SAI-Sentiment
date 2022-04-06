@@ -58,7 +58,7 @@ def main():
     ConvNN_training = []
     ConvNN_test = []
 
-    for i in range(1, 150, 20):
+    for i in range(1, 60, 5):
         model = Algorithm_1.TensorFlow_CNN(train_data, test_data, algo1_lr, algo1_epochs, algo1_opt, i)
         duration_train, acc_train, n_params = model.train()
         duration_test, acc_test = model.test()
@@ -87,7 +87,7 @@ def main():
     DBOW_training = []
     DBOW_test = []
 
-    for i in range(1, 60, 10):
+    for i in range(1, 40, 5):
         model = Algorithm_2.RNNEmbeddingLayer(train_data, test_data, algo2_lr, algo2_epochs, algo2_opt, i)
         duration_train, acc_train, n_params = model.train()
         duration_test, acc_test = model.test()
@@ -116,7 +116,7 @@ def main():
     NeuralNetwork_training = []
     NeuralNetwork_test = []
 
-    for i in range(1, 150, 20):
+    for i in range(1, 80, 10):
         model = Algorithm_3.NeuralNetworkEmbeddingLayer(train_data, test_data, algo3_lr, algo3_epochs, algo3_opt, i)
         duration_train, acc_train, n_params = model.train()
         duration_test, acc_test = model.test()
