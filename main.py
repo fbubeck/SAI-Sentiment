@@ -58,7 +58,7 @@ def main():
     ConvNN_training = []
     ConvNN_test = []
 
-    for i in range(1, 150, 50):
+    for i in range(1, 150, 20):
         model = Algorithm_1.TensorFlow_CNN(train_data, test_data, algo1_lr, algo1_epochs, algo1_opt, i)
         duration_train, acc_train, n_params = model.train()
         duration_test, acc_test = model.test()
@@ -82,13 +82,13 @@ def main():
     ConvNN_test_df = pd.DataFrame(ConvNN_test)
 
     ################################################################################################################
-    # DBOW Model
+    # Recurrent Neural Network
     ################################################################################################################
     DBOW_training = []
     DBOW_test = []
 
     for i in range(1, 60, 10):
-        model = Algorithm_2.TextClassifier_DBOW(train_data, test_data, algo2_lr, algo2_epochs, algo2_opt, i)
+        model = Algorithm_2.RNNEmbeddingLayer(train_data, test_data, algo2_lr, algo2_epochs, algo2_opt, i)
         duration_train, acc_train, n_params = model.train()
         duration_test, acc_test = model.test()
 
@@ -116,7 +116,7 @@ def main():
     NeuralNetwork_training = []
     NeuralNetwork_test = []
 
-    for i in range(1, 150, 50):
+    for i in range(1, 150, 20):
         model = Algorithm_3.NeuralNetworkEmbeddingLayer(train_data, test_data, algo3_lr, algo3_epochs, algo3_opt, i)
         duration_train, acc_train, n_params = model.train()
         duration_test, acc_test = model.test()
@@ -162,7 +162,7 @@ def main():
     ax2.plot(NeuralNetwork_test_df["accuracy"], NeuralNetwork_test_df["duration"], '-o', c='red', alpha=0.6, markersize=4)
     ax1.title.set_text('Training')
     ax2.title.set_text('Inference')
-    plt.legend(["Universal Sentence Encoder + Neural Network", "DBOW + Neural Network", "Embedding Layer + Neural Network"],
+    plt.legend(["Universal Sentence Encoder + Neural Network", "Embedding Layer + RNN", "Embedding Layer + Neural Network"],
                loc='lower center', ncol=3, bbox_transform=fig.transFigure, bbox_to_anchor=(0.5, 0))
     plt.savefig('plots/Algorithms_Evaluation.png', dpi=600)
     plt.clf()
@@ -175,7 +175,7 @@ def main():
     plt.plot(NeuralNetwork_training_df["accuracy"], NeuralNetwork_training_df["parameter"], '-o', c='red', alpha=0.6)
     plt.xlabel('Accuracy [in %]', fontsize=10)
     plt.ylabel('Number of Parameter', fontsize=10)
-    plt.legend(["Universal Sentence Encoder + Neural Network", "DBOW + Neural Network", "Embedding Layer + Neural Network"])
+    plt.legend(["Universal Sentence Encoder + Neural Network", "Embedding Layer + RNN", "Embedding Layer + Neural Network"])
     # plt.yscale('log')
     plt.savefig('plots/Number_of_Parameter.png', dpi=300)
     plt.clf()

@@ -20,7 +20,7 @@ from tqdm import tqdm
 from nltk.corpus import stopwords
 
 
-class TextClassifier_DBOW:
+class RNNEmbeddingLayer:
     def __init__(self, train_data, test_data, learning_rate, n_epochs, opt, i):
         self.history = None
         self.train_data = train_data
@@ -112,7 +112,7 @@ class TextClassifier_DBOW:
         error = round(error, 2)
 
         # Summary
-        print('------ Embedding Layer + Neural Network ------')
+        print('------ Embedding Layer + Recurrent Neural Network ------')
         print('Number of Neurons: ', self.i)
         print(f'Duration Training: {duration_training} seconds')
         print('Accuracy Training: ', error)
