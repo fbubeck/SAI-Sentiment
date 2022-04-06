@@ -55,31 +55,31 @@ def main():
     ################################################################################################################
     # Convolutional Neural Network
     ################################################################################################################
-    # ConvNN_training = []
-    # ConvNN_test = []
-    #
-    # for i in range(1, 150, 50):
-    #     model = Algorithm_1.TensorFlow_CNN(train_data, test_data, algo1_lr, algo1_epochs, algo1_opt, i)
-    #     duration_train, acc_train, n_params = model.train()
-    #     duration_test, acc_test = model.test()
-    #
-    #     ConvNN_training.append(
-    #         {'accuracy': acc_train,
-    #          'duration': duration_train,
-    #          'parameter': n_params,
-    #          'Run': i
-    #          }
-    #     )
-    #     ConvNN_test.append(
-    #         {'accuracy': acc_test,
-    #          'duration': duration_test,
-    #          'Run': i
-    #          }
-    #     )
-    #     model = None
-    #
-    # ConvNN_training_df = pd.DataFrame(ConvNN_training)
-    # ConvNN_test_df = pd.DataFrame(ConvNN_test)
+    ConvNN_training = []
+    ConvNN_test = []
+
+    for i in range(1, 150, 50):
+        model = Algorithm_1.TensorFlow_CNN(train_data, test_data, algo1_lr, algo1_epochs, algo1_opt, i)
+        duration_train, acc_train, n_params = model.train()
+        duration_test, acc_test = model.test()
+
+        ConvNN_training.append(
+            {'accuracy': acc_train,
+             'duration': duration_train,
+             'parameter': n_params,
+             'Run': i
+             }
+        )
+        ConvNN_test.append(
+            {'accuracy': acc_test,
+             'duration': duration_test,
+             'Run': i
+             }
+        )
+        model = None
+
+    ConvNN_training_df = pd.DataFrame(ConvNN_training)
+    ConvNN_test_df = pd.DataFrame(ConvNN_test)
 
     ################################################################################################################
     # DBOW Model
