@@ -53,7 +53,7 @@ class TensorFlow_CNN:
 
         # Time
         duration_training = end_training - start_training
-        duration_training = round(duration_training, 2)
+        duration_training = round(duration_training, 4)
 
         # Number of Parameter
         trainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.trainable_weights])
@@ -62,7 +62,8 @@ class TensorFlow_CNN:
 
         # Prediction for Training mse
         loss, error = self.model.evaluate(xs_train, ys_train, verbose=0)
-        error = round(error, 2)
+        error *= 100
+        error = round(error, 4)
 
         # Summary
         print('------ TensorFlow - Universal Sentence Encoder Model ------')
@@ -81,12 +82,13 @@ class TensorFlow_CNN:
         # Predict Data
         start_test = time()
         loss, error = self.model.evaluate(xs_test, ys_test, verbose=0)
-        error = round(error, 2)
+        error *= 100
+        error = round(error, 4)
         end_test = time()
 
         # Time
         duration_test = end_test - start_test
-        duration_test = round(duration_test, 2)
+        duration_test = round(duration_test, 4)
 
         print(f'Duration Inference: {duration_test} seconds')
 

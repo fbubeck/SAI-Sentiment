@@ -2,37 +2,25 @@
     "Algorithm 1":{
         "learning_rate":0.001,
         "n_epochs":5,
-        "opt": "Adam"
+        "opt": "Adam",
+        "min": 1,
+        "max": 60,
+        "step": 5
     },
     "Algorithm 2":{
         "learning_rate":0.001,
         "n_epochs":1,
-        "opt": "Adam"
-    },
-    "Algorithm 2 - Run A":{
-        "n_epochs":15,
-        "solver": "lbfgs",
-        "C": 1,
-        "penalty": "l2",
-        "id":2.1
-    },
-    "Algorithm 2 - Run B":{
-        "n_epochs":20,
-        "solver": "lsaga",
-        "C": 1,
-        "penalty": "l1",
-        "id":2.2
-    },
-    "Algorithm 2 - Run C":{
-        "n_epochs":20,
-        "solver": "sag",
-        "C": 1,
-        "penalty": "l2",
-        "id":2.3
+        "opt": "Adam",
+        "min": 1,
+        "max": 40,
+        "step": 5
     },
     "Algorithm 3":{
         "learning_rate":0.001,
         "n_epochs":1,
-        "opt": "rmsprop"
+        "opt": "rmsprop",
+        "min": 1,
+        "max": 80,
+        "step": 10
     }
 }

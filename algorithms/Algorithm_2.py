@@ -1,23 +1,13 @@
 import multiprocessing
 from time import time
 
-import nltk
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from gensim.models import Word2Vec
-from gensim.models.doc2vec import TaggedDocument, Doc2Vec
-from matplotlib import pyplot as plt
 from keras.preprocessing.text import Tokenizer
 from keras_preprocessing.sequence import pad_sequences
-from sklearn import utils
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import mean_squared_error
+from matplotlib import pyplot as plt
 from tensorflow import keras
-from tqdm import tqdm
-from nltk.corpus import stopwords
 
 
 class RNNEmbeddingLayer:
@@ -100,7 +90,7 @@ class RNNEmbeddingLayer:
 
         # Time
         duration_training = end_training - start_training
-        duration_training = round(duration_training, 2)
+        duration_training = round(duration_training, 4)
 
         # Number of Parameter
         trainableParams = np.sum([np.prod(v.get_shape()) for v in self.model.trainable_weights])
@@ -109,7 +99,8 @@ class RNNEmbeddingLayer:
 
         # Prediction for Training mse
         loss, error = self.model.evaluate(xs_train, ys_train, verbose=0)
-        error = round(error, 2)
+        error *= 100
+        error = round(error, 4)
 
         # Summary
         print('------ Embedding Layer + Recurrent Neural Network ------')
@@ -124,12 +115,13 @@ class RNNEmbeddingLayer:
         # Predict Data
         start_test = time()
         loss, error = self.model.evaluate(self.xs_test, self.ys_test, verbose=0)
-        error = round(error, 2)
+        error *= 100
+        error = round(error, 4)
         end_test = time()
 
         # Time
         duration_test = end_test - start_test
-        duration_test = round(duration_test, 2)
+        duration_test = round(duration_test, 4)
 
         print(f'Duration Inference: {duration_test} seconds')
 
@@ -137,37 +129,6 @@ class RNNEmbeddingLayer:
         print("")
 
         return duration_test, error
-
-    @staticmethod
-    def tokenize_text(text):
-        tokens = []
-        for sent in nltk.sent_tokenize(text):
-            for word in nltk.word_tokenize(sent):
-                if len(word) < 2:
-                    continue
-                tokens.append(word.lower())
-        return tokens
-
-    @staticmethod
-    def train_Doc2Vec(model, train_tagged, test_tagged, n_epochs):
-        for epoch in range(n_epochs):
-            model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
-                        total_examples=len(train_tagged.values), epochs=1)
-            model.alpha -= 0.001
-            model.min_alpha = model.alpha
-        # model.train(utils.shuffle([x for x in tqdm(train_tagged.values)]),
-        #             total_examples=len(train_tagged.values), epochs=1)
-
-        y_train, X_train = TextClassifier_DBOW.vec_for_learning(model, train_tagged)
-        y_test, X_test = TextClassifier_DBOW.vec_for_learning(model, test_tagged)
-
-        return y_train, X_train, y_test, X_test
-
-    @staticmethod
-    def vec_for_learning(model, tagged_docs):
-        sents = tagged_docs.values
-        targets, regressors = zip(*[(doc.tags[0], model.infer_vector(doc.words)) for doc in sents])
-        return targets, regressors
 
     def plot(self):
         # Plot loss and val_loss
