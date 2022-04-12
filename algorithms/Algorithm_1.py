@@ -1,5 +1,6 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 from time import time
-
 import keras
 import numpy as np
 import tensorflow as tf
